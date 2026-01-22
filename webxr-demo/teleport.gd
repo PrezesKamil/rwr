@@ -26,21 +26,16 @@ func teleport_now() -> void:
 
 	var target_point: Vector3 = ray.get_collision_point()
 
-	# offset kamery względem origin (tylko XZ)
-	var origin_pos := xr_origin.global_position
-	var cam_pos := xr_camera.global_position
-	var offset_x := cam_pos.x - origin_pos.x
-	var offset_z := cam_pos.z - origin_pos.z
+	# offset kamery względem XROrigin w przestrzeni lokalnej
+	var cam_local_offset := xr_origin.to_local(xr_camera.global_position)
+	cam_local_offset.y = 0.0  # ignorujemy wysokość
 
-	var new_player_pos := Vector3(
-		target_point.x - offset_x,
-		target_point.y,
-		target_point.z - offset_z
-	)
+	# nowa pozycja gracza
+	var new_player_pos := target_point - (xr_origin.global_transform.basis * cam_local_offset)
 
 	player.global_position = new_player_pos
+	player.velocity = Vector3.ZERO
 
 func _on_right_controller_button_released(button_name: String) -> void:
-	print("Puszczono przycisk: ", button_name)
 	if button_name == "trigger_click":
 		teleport_now()
