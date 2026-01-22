@@ -20,12 +20,13 @@ func _process(_delta: float) -> void:
 func teleport_now() -> void:
 	if not ray.is_colliding():
 		return
+
 	var target: Vector3 = ray.get_collision_point()
 
-	var origin_tf := xr_origin.global_transform
-	var cam_tf := xr_camera.global_transform
-	var cam_offset := cam_tf.origin - origin_tf.origin
-	cam_offset.y = 0.0
-	origin_tf.origin = target - cam_offset
-	origin_tf.origin = Vector3(target.x - cam_offset.x, target.y, target.z - cam_offset.z)
-	xr_origin.global_transform = origin_tf
+	var origin_pos := xr_origin.global_transform.origin
+	var camera_pos := xr_camera.global_transform.origin
+
+	var offset := camera_pos - origin_pos
+	offset.y = 0.0
+
+	xr_origin.global_transform.origin = target - offset
